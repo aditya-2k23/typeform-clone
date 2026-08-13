@@ -11,6 +11,7 @@ import QuestionEditor from "./QuestionEditor";
 import PreviewPanel from "./PreviewPanel";
 import Toast, { type ToastData } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import ShareModal from "@/components/ShareModal";
 
 export default function BuilderClient({ formId }: { formId: string }) {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [toast, setToast] = useState<ToastData | null>(null);
   const [confirmDeleteQ, setConfirmDeleteQ] = useState<string | null>(null);
-  const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const fetchForm = useCallback(async () => {
     try {
@@ -46,7 +47,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
   }, [fetchForm]);
 
   // Form Actions
-  
+
   async function handleTitleChange(title: string) {
     if (!form) return;
     setSaveStatus("saving");
@@ -66,11 +67,11 @@ export default function BuilderClient({ formId }: { formId: string }) {
   async function handlePublish() {
     if (!form) return;
     try {
-      const res = await apiFetch<{ public_url: string }>(`/forms/${form.id}/publish`, {
+      await apiFetch<{ public_url: string }>(`/forms/${form.id}/publish`, {
         method: "POST",
       });
       setForm({ ...form, status: "published" });
-      setPublishedUrl(res.public_url);
+      setShowShareModal(true);
       setToast({ message: "Form published successfully", type: "success" });
     } catch {
       setToast({ message: "Failed to publish form", type: "error" });
@@ -187,8 +188,8 @@ export default function BuilderClient({ formId }: { formId: string }) {
 
   if (loading || !form) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent" />
+      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-[#111315]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 dark:border-white border-t-transparent" />
       </div>
     );
   }
@@ -239,7 +240,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
       {previewOpen && (
         <PreviewPanel
           question={selectedQuestion || null}
-          questionNumber={selectedIndex !== -1 ? selectedIndex + 1 : 0}
+          questionNumber={selectedIndex !== -1 ? selectedIndex + 1 : 1}
           onClose={() => setPreviewOpen(false)}
         />
       )}
@@ -255,98 +256,20 @@ export default function BuilderClient({ formId }: { formId: string }) {
       {confirmDeleteQ && (
         <ConfirmDialog
           title="Delete Question"
-          message="Are you sure you want to delete this question? This cannot be undone."
+          message="Are you sure you want to delete this question? Any collected answers for this question will remain in response logs."
           confirmLabel="Delete"
           onConfirm={handleDeleteQuestion}
           onCancel={() => setConfirmDeleteQ(null)}
         />
       )}
 
-      {/* Published Success Modal */}
-      {publishedUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-            onClick={() => setPublishedUrl(null)}
-          />
-          <div className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-[#181a1d] border border-gray-100 dark:border-gray-800 p-7 shadow-2xl animate-in">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <h2 className="mb-1.5 text-lg font-semibold text-gray-900 dark:text-white">
-              Your typeform is live!
-            </h2>
-            <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
-              Anyone with this link can now view and submit responses.
-            </p>
-
-            <div className="mb-6 flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#111315] p-2 text-sm">
-              <input
-                type="text"
-                readOnly
-                value={
-                  typeof window !== "undefined"
-                    ? `${window.location.origin}${publishedUrl}`
-                    : publishedUrl
-                }
-                className="flex-1 bg-transparent px-2 text-xs font-mono text-gray-700 dark:text-gray-300 outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}${publishedUrl}`
-                  );
-                  setToast({ message: "Link copied to clipboard", type: "success" });
-                }}
-                className="rounded-lg bg-white dark:bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-800 dark:text-gray-200 shadow-xs border border-gray-200 dark:border-gray-700 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                Copy
-              </button>
-            </div>
-
-            <div className="flex justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={() => setPublishedUrl(null)}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                Done
-              </button>
-              <a
-                href={publishedUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-gray-900 transition-colors hover:bg-gray-800 dark:hover:bg-gray-100"
-              >
-                Open form
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 3h7v7M13 3L6 10" />
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
+      {/* Share / Published Success Modal */}
+      {showShareModal && form && (
+        <ShareModal
+          slug={form.slug}
+          title="Your typeform is live!"
+          onClose={() => setShowShareModal(false)}
+        />
       )}
     </div>
   );

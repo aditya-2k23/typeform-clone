@@ -9,6 +9,7 @@ interface FormCardProps {
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
   onTogglePublish: (id: string, currentStatus: string) => void;
+  onShare: (form: FormListItem) => void;
 }
 
 export default function FormCard({
@@ -16,6 +17,7 @@ export default function FormCard({
   onDuplicate,
   onDelete,
   onTogglePublish,
+  onShare,
 }: FormCardProps) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -60,7 +62,7 @@ export default function FormCard({
               e.stopPropagation();
               setMenuOpen((prev) => !prev);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-all hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300 group-hover:opacity-100 data-[open=true]:opacity-100"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-all hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300 group-hover:opacity-100 data-[open=true]:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white focus-visible:outline-hidden"
             data-open={menuOpen}
             aria-label="Form actions"
           >
@@ -88,6 +90,15 @@ export default function FormCard({
                   router.push(`/forms/${form.id}/results`);
                 }}
               />
+              {isPublished && (
+                <MenuItem
+                  label="Share link"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onShare(form);
+                  }}
+                />
+              )}
               <MenuItem
                 label="Duplicate"
                 onClick={() => {
@@ -181,9 +192,10 @@ function MenuItem({
   label: string;
   onClick: () => void;
   danger?: boolean;
-  }) {
+}) {
   return (
     <button
+      type="button"
       onClick={(e) => {
         e.stopPropagation();
         onClick();

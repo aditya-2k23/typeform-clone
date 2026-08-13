@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 import { apiFetch } from "@/lib/api";
-import type { FormListItem, FormDetail } from "@/lib/types";
+import type { FormListItem, FormDetail, FormPublishOut } from "@/lib/types";
 
 import Navbar from "@/components/Navbar";
 import CreateButton from "@/components/CreateButton";
 import FormCard from "@/components/FormCard";
 import Toast, { type ToastData } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import ShareModal from "@/components/ShareModal";
 
 export default function DashboardClient() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function DashboardClient() {
   const [creating, setCreating] = useState(false);
   const [toast, setToast] = useState<ToastData | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [shareModalSlug, setShareModalSlug] = useState<string | null>(null);
 
   // Fetch forms
   const fetchForms = useCallback(async () => {
@@ -87,8 +89,15 @@ export default function DashboardClient() {
   async function handleTogglePublish(id: string, currentStatus: string) {
     const action = currentStatus === "published" ? "unpublish" : "publish";
     try {
-      await apiFetch(`/forms/${id}/${action}`, { method: "POST" });
-      showToast(action === "publish" ? "Form published" : "Form unpublished");
+      const res = await apiFetch<FormPublishOut | FormDetail>(`/forms/${id}/${action}`, { method: "POST" });
+      if (action === "publish") {
+        showToast("Form published");
+        if ("slug" in res && res.slug) {
+          setShareModalSlug(res.slug);
+        }
+      } else {
+        showToast("Form unpublished");
+      }
       fetchForms();
     } catch {
       showToast(`Failed to ${action} form`, "error");
@@ -163,6 +172,7 @@ export default function DashboardClient() {
                 onDuplicate={handleDuplicate}
                 onDelete={(id) => setConfirmDelete(id)}
                 onTogglePublish={handleTogglePublish}
+                onShare={(f) => setShareModalSlug(f.slug)}
               />
             ))}
           </div>
@@ -186,6 +196,15 @@ export default function DashboardClient() {
           confirmLabel="Delete"
           onConfirm={handleDeleteConfirmed}
           onCancel={() => setConfirmDelete(null)}
+        />
+      )}
+
+      {/* Share / Public URL Modal */}
+      {shareModalSlug && (
+        <ShareModal
+          slug={shareModalSlug}
+          title="Share your typeform"
+          onClose={() => setShareModalSlug(null)}
         />
       )}
     </>
