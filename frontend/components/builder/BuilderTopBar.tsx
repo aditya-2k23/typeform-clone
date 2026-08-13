@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import type { FormDetail } from "@/lib/types";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface BuilderTopBarProps {
   form: FormDetail;
@@ -48,11 +49,11 @@ export default function BuilderTopBar({
   const isPublished = form.status === "published";
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center border-b border-gray-100 bg-white px-4">
+    <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-[#111315] px-4">
       {/* Left — back arrow */}
       <Link
         href="/"
-        className="mr-4 flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+        className="mr-4 flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
         aria-label="Back to dashboard"
       >
         <svg
@@ -84,12 +85,12 @@ export default function BuilderTopBar({
                 setEditing(false);
               }
             }}
-            className="w-80 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-center text-sm font-medium text-gray-900 outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+            className="w-80 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 text-center text-sm font-medium text-gray-900 dark:text-white outline-none focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400"
           />
         ) : (
           <button
             onClick={() => setEditing(true)}
-            className="max-w-sm truncate rounded-lg px-3 py-1.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
+            className="max-w-sm truncate rounded-lg px-3 py-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/60"
             title="Click to edit form title"
           >
             {form.title}
@@ -103,7 +104,7 @@ export default function BuilderTopBar({
               ? "text-amber-500"
               : saveStatus === "error"
                 ? "text-red-500"
-                : "text-gray-400"
+                : "text-gray-400 dark:text-gray-500"
           }`}
         >
           {saveStatus === "saving"
@@ -114,18 +115,20 @@ export default function BuilderTopBar({
         </span>
       </div>
 
-      {/* Right — Results + Preview + Publish */}
+      {/* Right — ThemeToggle + Results + Preview + Publish */}
       <div className="flex items-center gap-2">
+        <ThemeToggle />
+
         <Link
           href={`/forms/${form.id}/results`}
-          className="rounded-lg px-3.5 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          className="rounded-lg px-3.5 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white"
         >
           Results
         </Link>
 
         <button
           onClick={onPreview}
-          className="rounded-lg px-3.5 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          className="rounded-lg px-3.5 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white"
         >
           Preview
         </button>
@@ -133,14 +136,14 @@ export default function BuilderTopBar({
         {isPublished ? (
           <button
             onClick={onUnpublish}
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
           >
             Unpublish
           </button>
         ) : (
           <button
             onClick={onPublish}
-            className="rounded-lg bg-gray-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+            className="rounded-lg bg-gray-900 dark:bg-white px-5 py-2 text-sm font-medium text-white dark:text-gray-900 transition-colors hover:bg-gray-800 dark:hover:bg-gray-100"
           >
             Publish
           </button>

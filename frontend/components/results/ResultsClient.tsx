@@ -47,15 +47,15 @@ export default function ResultsClient({ formId }: { formId: string }) {
 
   if (error && !form) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 text-center">
-        <h2 className="mb-2 text-xl font-bold text-gray-900">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-[#111315] px-6 text-center">
+        <h2 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
           Failed to load form results
         </h2>
-        <p className="mb-6 text-sm text-gray-500">{error}</p>
+        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">{error}</p>
         <button
           type="button"
           onClick={loadData}
-          className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-gray-800"
+          className="rounded-full bg-gray-900 dark:bg-white px-5 py-2 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
         >
           Try Again
         </button>
@@ -64,10 +64,11 @@ export default function ResultsClient({ formId }: { formId: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 flex flex-col">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-[#111315] flex flex-col">
       <ResultsTopBar
         formId={formId}
         formTitle={form?.title || "Loading..."}
+        responseCount={stats?.total_responses ?? responses.length}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />

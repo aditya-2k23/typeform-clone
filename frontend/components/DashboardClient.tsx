@@ -104,10 +104,10 @@ export default function DashboardClient() {
         {/* Header */}
         <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               My Typeforms
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {forms.length} form{forms.length !== 1 && "s"}
             </p>
           </div>
@@ -120,7 +120,7 @@ export default function DashboardClient() {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-44 animate-pulse rounded-xl border border-gray-100 bg-gray-50"
+                className="h-44 animate-pulse rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#181a1d]"
               />
             ))}
           </div>
@@ -128,14 +128,14 @@ export default function DashboardClient() {
 
         {/* Empty state */}
         {!loading && forms.length === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 py-24">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100">
+          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800 py-24">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-400">
               <svg
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#9CA3AF"
+                stroke="currentColor"
                 strokeWidth="1.5"
                 strokeLinecap="round"
               >
@@ -143,10 +143,10 @@ export default function DashboardClient() {
                 <path d="M9 9h6M9 13h4" />
               </svg>
             </div>
-            <p className="mb-1 text-base font-medium text-gray-900">
+            <p className="mb-1 text-base font-medium text-gray-900 dark:text-gray-100">
               No forms yet
             </p>
-            <p className="mb-6 text-sm text-gray-500">
+            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
               Create your first typeform to get started
             </p>
             <CreateButton onClick={handleCreate} loading={creating} />

@@ -2,9 +2,12 @@
 Router: responses & stats — view results for a form.
 """
 
+import csv
+import io
 from collections import Counter
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
@@ -76,6 +79,59 @@ def list_responses(form_id: str, db: Session = Depends(get_db)):
         )
 
     return results
+
+
+@router.get("/forms/{form_id}/responses/export")
+def export_responses_csv(form_id: str, db: Session = Depends(get_db)):
+    """
+    Export all responses for a form as a CSV spreadsheet.
+    Columns: Response ID, Submitted At, and one column per question in order.
+    """
+    form = (
+        db.query(Form)
+        .options(joinedload(Form.questions))
+        .filter(Form.id == form_id)
+        .first()
+    )
+    if not form:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Form not found")
+
+    sorted_questions = sorted(form.questions, key=lambda q: q.order)
+
+    responses = (
+        db.query(ResponseModel)
+        .options(joinedload(ResponseModel.answers))
+        .filter(ResponseModel.form_id == form_id)
+        .order_by(ResponseModel.submitted_at.desc())
+        .all()
+    )
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header row
+    headers = ["Response ID", "Submitted At"] + [q.title for q in sorted_questions]
+    writer.writerow(headers)
+
+    # Data rows
+    for resp in responses:
+        ans_by_qid = {ans.question_id: ans.value for ans in resp.answers}
+        row = [
+            resp.id,
+            resp.submitted_at.isoformat() if resp.submitted_at else "",
+        ]
+        for q in sorted_questions:
+            row.append(ans_by_qid.get(q.id, ""))
+        writer.writerow(row)
+
+    output.seek(0)
+    filename = f"{form.slug or 'form'}-responses.csv"
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @router.get("/forms/{form_id}/responses/{response_id}", response_model=ResponseDetail)

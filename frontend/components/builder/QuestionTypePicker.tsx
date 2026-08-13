@@ -27,7 +27,7 @@ export default function QuestionTypePicker({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-500 transition-all hover:border-gray-400 hover:bg-gray-50 hover:text-gray-700"
+        className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 px-4 py-2.5 text-sm font-medium text-gray-500 dark:text-gray-400 transition-all hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/80 hover:text-gray-700 dark:hover:text-gray-200"
       >
         <svg
           width="16"
@@ -44,8 +44,8 @@ export default function QuestionTypePicker({
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-0 right-0 z-30 mb-2 rounded-xl border border-gray-100 bg-white p-2 shadow-xl animate-in">
-          <p className="mb-2 px-2 pt-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+        <div className="absolute bottom-full left-0 right-0 z-30 mb-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1e2124] p-2 shadow-xl animate-in">
+          <p className="mb-2 px-2 pt-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
             Question type
           </p>
           <div className="grid grid-cols-2 gap-1">
@@ -56,9 +56,9 @@ export default function QuestionTypePicker({
                   setOpen(false);
                   onSelect(qt.type);
                 }}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-200 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
               >
-                <span className="shrink-0 text-gray-400">{qt.icon}</span>
+                <span className="shrink-0 text-gray-400 dark:text-gray-500">{qt.icon}</span>
                 <span className="font-medium">{qt.label}</span>
               </button>
             ))}

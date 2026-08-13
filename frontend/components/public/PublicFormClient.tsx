@@ -218,7 +218,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="flex min-h-screen items-center justify-center bg-white text-gray-900">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent" />
       </div>
     );
@@ -226,7 +226,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
 
   if (notFound || !form) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white text-gray-900 px-6 text-center">
         <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-400">
           <svg
             width="28"
@@ -263,7 +263,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
 
   if (form.questions.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white text-gray-900 px-6 text-center">
         <h1 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
           {form.title}
         </h1>
@@ -276,7 +276,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
   const isLast = currentIndex === form.questions.length - 1;
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-white text-gray-900">
       {/* Fixed top progress bar */}
       <ProgressBar current={currentIndex + 1} total={form.questions.length} />
 

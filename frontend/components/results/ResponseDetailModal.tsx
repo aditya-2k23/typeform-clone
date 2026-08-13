@@ -44,15 +44,15 @@ export default function ResponseDetailModal({
       />
 
       {/* Modal Card */}
-      <div className="relative z-10 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-2xl animate-in">
+      <div className="relative z-10 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl bg-white dark:bg-[#181a1d] border border-gray-100 dark:border-gray-800 shadow-2xl animate-in">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 px-6 py-4">
           <div>
-            <h3 className="text-base font-semibold text-gray-900">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
               Response Details
             </h3>
             {detail && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-gray-500">
                 Submitted{" "}
                 {new Date(detail.submitted_at).toLocaleString("en-US", {
                   dateStyle: "medium",
@@ -65,7 +65,7 @@ export default function ResponseDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300"
           >
             <svg
               width="16"
@@ -85,34 +85,34 @@ export default function ResponseDetailModal({
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {loading && (
             <div className="flex h-48 items-center justify-center">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-900 border-t-transparent" />
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-900 dark:border-white border-t-transparent" />
             </div>
           )}
 
           {error && (
-            <div className="rounded-xl bg-red-50 p-4 text-sm text-red-600 text-center">
+            <div className="rounded-xl bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-600 dark:text-red-400 text-center">
               {error}
             </div>
           )}
 
           {detail && detail.answers.length === 0 && (
-            <p className="text-sm text-gray-400 text-center py-8">
+            <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">
               No answers recorded for this response.
             </p>
           )}
 
           {detail && (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-800">
               {detail.answers.map((ans, idx) => (
                 <div key={ans.question_id || idx} className="py-4 first:pt-0 last:pb-0">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">
                     Question {idx + 1} • {ans.question_type}
                   </p>
-                  <p className="text-sm font-semibold text-gray-900 mb-2">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
                     {ans.question_title}
                   </p>
-                  <div className="rounded-lg bg-gray-50 px-3.5 py-2.5 text-sm text-gray-800 font-medium">
-                    {ans.value || <span className="text-gray-400 italic">No answer provided</span>}
+                  <div className="rounded-lg bg-gray-50 dark:bg-[#111315] border border-transparent dark:border-gray-800 px-3.5 py-2.5 text-sm text-gray-800 dark:text-gray-200 font-medium">
+                    {ans.value || <span className="text-gray-400 dark:text-gray-500 italic">No answer provided</span>}
                   </div>
                 </div>
               ))}
@@ -121,11 +121,11 @@ export default function ResponseDetailModal({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end border-t border-gray-100 px-6 py-3.5">
+        <div className="flex justify-end border-t border-gray-100 dark:border-gray-800 px-6 py-3.5">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+            className="rounded-lg bg-gray-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-gray-900 transition-colors hover:bg-gray-800 dark:hover:bg-gray-100"
           >
             Done
           </button>

@@ -54,23 +54,23 @@ export default function QuestionEditor({
   return (
     <div className="mx-auto max-w-3xl flex-1 px-8 py-10">
       {/* Top meta row */}
-      <div className="mb-8 flex items-center justify-between border-b border-gray-100 pb-4">
-        <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
-          <span className="text-gray-400">{typeConfig?.icon}</span>
+      <div className="mb-8 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+        <div className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+          <span className="text-gray-400 dark:text-gray-500">{typeConfig?.icon}</span>
           {typeConfig?.label || question.type}
         </div>
         <div className="flex items-center gap-4">
           {/* Required toggle */}
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <span className="font-medium">Required</span>
             <div
               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                question.required ? "bg-gray-900" : "bg-gray-200"
+                question.required ? "bg-gray-900 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
               }`}
               onClick={handleRequiredToggle}
             >
               <span
-                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white dark:bg-gray-900 transition-transform ${
                   question.required ? "translate-x-4.5" : "translate-x-1"
                 }`}
               />
@@ -86,7 +86,7 @@ export default function QuestionEditor({
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder="Your question here..."
-          className="w-full bg-transparent text-3xl font-medium tracking-tight text-gray-900 outline-none placeholder:text-gray-300"
+          className="w-full bg-transparent text-3xl font-medium tracking-tight text-gray-900 dark:text-white outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600"
         />
       </div>
 
@@ -97,7 +97,7 @@ export default function QuestionEditor({
           value={description}
           onChange={(e) => handleDescriptionChange(e.target.value)}
           placeholder="Description (optional)"
-          className="w-full bg-transparent text-lg text-gray-500 outline-none placeholder:text-gray-300"
+          className="w-full bg-transparent text-lg text-gray-500 dark:text-gray-400 outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600"
         />
       </div>
 
@@ -113,7 +113,7 @@ export default function QuestionEditor({
         {question.type === "rating" && (
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-4">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Max Rating
               </label>
               <input
@@ -125,18 +125,18 @@ export default function QuestionEditor({
                   const val = parseInt(e.target.value, 10);
                   if (!isNaN(val)) handleSettingsChange({ max_rating: val });
                 }}
-                className="w-20 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                className="w-20 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#181a1d] px-3 py-1.5 text-sm text-gray-900 dark:text-white outline-none focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400"
               />
             </div>
             
             <div className="flex items-center gap-4">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Shape
               </label>
               <select
                 value={(question.settings?.icon as string) || "star"}
                 onChange={(e) => handleSettingsChange({ icon: e.target.value })}
-                className="w-32 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                className="w-32 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#181a1d] px-3 py-1.5 text-sm text-gray-900 dark:text-white outline-none focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400"
               >
                 {RATING_ICONS.map((icon) => (
                   <option key={icon.id} value={icon.id}>
@@ -150,10 +150,10 @@ export default function QuestionEditor({
       </div>
 
       {/* Danger zone */}
-      <div className="border-t border-red-100 pt-6">
+      <div className="border-t border-red-100 dark:border-red-950/40 pt-6">
         <button
           onClick={onDelete}
-          className="inline-flex items-center gap-2 rounded-lg text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 px-3 py-2 -ml-3"
+          className="inline-flex items-center gap-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30 px-3 py-2 -ml-3"
         >
           <svg
             width="16"

@@ -56,13 +56,13 @@ export default function QuestionSidebar({
   }
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col border-r border-gray-100 bg-gray-50/50">
+    <aside className="flex w-72 shrink-0 flex-col border-r border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#151719]">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
           Questions
         </h2>
-        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">
+        <span className="rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
           {questions.length}
         </span>
       </div>
@@ -94,7 +94,7 @@ export default function QuestionSidebar({
       </div>
 
       {/* Add question button */}
-      <div className="border-t border-gray-100 px-3 py-3">
+      <div className="border-t border-gray-100 dark:border-gray-800 px-3 py-3">
         <QuestionTypePicker onSelect={onAddQuestion} />
       </div>
     </aside>

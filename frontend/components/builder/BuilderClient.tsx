@@ -197,7 +197,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
   const selectedIndex = questions.findIndex((q) => q.id === selectedId);
 
   return (
-    <div className="flex h-screen flex-col bg-white">
+    <div className="flex h-screen flex-col bg-white dark:bg-[#111315]">
       <BuilderTopBar
         form={form}
         saveStatus={saveStatus}
@@ -216,7 +216,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
           onAddQuestion={handleAddQuestion}
         />
 
-        <main className="flex-1 overflow-y-auto bg-white">
+        <main className="flex-1 overflow-y-auto bg-white dark:bg-[#111315]">
           {selectedQuestion ? (
             <QuestionEditor
               question={selectedQuestion}
@@ -224,8 +224,8 @@ export default function BuilderClient({ formId }: { formId: string }) {
               onDelete={() => setConfirmDeleteQ(selectedQuestion.id)}
             />
           ) : (
-            <div className="flex h-full flex-col items-center justify-center text-gray-500">
-              <div className="mb-4 rounded-full bg-gray-100 p-4">
+            <div className="flex h-full flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+              <div className="mb-4 rounded-full bg-gray-100 dark:bg-gray-800 p-4">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M12 5v14M5 12h14" />
                 </svg>
@@ -269,8 +269,8 @@ export default function BuilderClient({ formId }: { formId: string }) {
             className="absolute inset-0 bg-black/30 backdrop-blur-sm"
             onClick={() => setPublishedUrl(null)}
           />
-          <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl animate-in">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+          <div className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-[#181a1d] border border-gray-100 dark:border-gray-800 p-7 shadow-2xl animate-in">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
               <svg
                 width="24"
                 height="24"
@@ -284,14 +284,14 @@ export default function BuilderClient({ formId }: { formId: string }) {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <h2 className="mb-1.5 text-lg font-semibold text-gray-900">
+            <h2 className="mb-1.5 text-lg font-semibold text-gray-900 dark:text-white">
               Your typeform is live!
             </h2>
-            <p className="mb-5 text-sm text-gray-500">
+            <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
               Anyone with this link can now view and submit responses.
             </p>
 
-            <div className="mb-6 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-2 text-sm">
+            <div className="mb-6 flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#111315] p-2 text-sm">
               <input
                 type="text"
                 readOnly
@@ -300,7 +300,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
                     ? `${window.location.origin}${publishedUrl}`
                     : publishedUrl
                 }
-                className="flex-1 bg-transparent px-2 text-xs font-mono text-gray-700 outline-none"
+                className="flex-1 bg-transparent px-2 text-xs font-mono text-gray-700 dark:text-gray-300 outline-none"
               />
               <button
                 type="button"
@@ -310,7 +310,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
                   );
                   setToast({ message: "Link copied to clipboard", type: "success" });
                 }}
-                className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-800 shadow-xs border border-gray-200 transition-colors hover:bg-gray-100"
+                className="rounded-lg bg-white dark:bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-800 dark:text-gray-200 shadow-xs border border-gray-200 dark:border-gray-700 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 Copy
               </button>
@@ -320,7 +320,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
               <button
                 type="button"
                 onClick={() => setPublishedUrl(null)}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 Done
               </button>
@@ -328,7 +328,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
                 href={publishedUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-gray-900 transition-colors hover:bg-gray-800 dark:hover:bg-gray-100"
               >
                 Open form
                 <svg

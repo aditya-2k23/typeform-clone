@@ -10,7 +10,7 @@ export default function CreateButton({ onClick, loading }: CreateButtonProps) {
     <button
       onClick={onClick}
       disabled={loading}
-      className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-7 py-3.5 text-[15px] font-medium text-white shadow-sm transition-all hover:bg-gray-800 hover:shadow-md active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none"
+      className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-7 py-3.5 text-[15px] font-medium text-white shadow-sm transition-all hover:bg-gray-800 hover:shadow-md active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
     >
       {loading ? (
         <svg

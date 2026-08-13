@@ -29,10 +29,10 @@ export default function ResponsesTab({
     );
   }
 
-  if (responses.length === 0) {
+  if (!loading && responses.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 py-20 text-center">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-400">
+      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800 py-20 text-center">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-400">
           <svg
             width="28"
             height="28"
@@ -49,10 +49,10 @@ export default function ResponsesTab({
             <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
         </div>
-        <h3 className="mb-1 text-base font-semibold text-gray-900">
+        <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">
           No responses yet
         </h3>
-        <p className="max-w-sm text-sm text-gray-500">
+        <p className="max-w-sm text-sm text-gray-500 dark:text-gray-400">
           Responses will appear here as soon as respondents start filling out your form.
         </p>
       </div>
@@ -61,8 +61,8 @@ export default function ResponsesTab({
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xs">
-        <div className="border-b border-gray-100 bg-gray-50/70 px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
+      <div className="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#181a1d] shadow-xs">
+        <div className="border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-[#141618] px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-3">Submitted At</div>
             <div className="col-span-8">Answer Preview</div>
@@ -70,19 +70,19 @@ export default function ResponsesTab({
           </div>
         </div>
 
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100 dark:divide-gray-800">
           {responses.map((resp, idx) => (
             <div
               key={resp.id}
               onClick={() => setSelectedResponseId(resp.id)}
-              className="grid grid-cols-12 items-center gap-4 px-6 py-4 transition-colors hover:bg-gray-50/80 cursor-pointer"
+              className="grid grid-cols-12 items-center gap-4 px-6 py-4 transition-colors hover:bg-gray-50/80 dark:hover:bg-[#1f2226] cursor-pointer"
             >
               {/* Submission Date/Time */}
               <div className="col-span-3">
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   Response #{responses.length - idx}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-400 dark:text-gray-500">
                   {new Date(resp.submitted_at).toLocaleString("en-US", {
                     dateStyle: "medium",
                     timeStyle: "short",
@@ -96,16 +96,16 @@ export default function ResponsesTab({
                   resp.preview.map((ans, aIdx) => (
                     <div
                       key={aIdx}
-                      className="max-w-[220px] truncate rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-1 text-xs text-gray-700"
+                      className="max-w-[220px] truncate rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/60 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-300"
                       title={`${ans.question_title}: ${ans.value}`}
                     >
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
                         {ans.value || "—"}
                       </span>
                     </div>
                   ))
                 ) : (
-                  <span className="text-xs text-gray-400 italic">
+                  <span className="text-xs text-gray-400 dark:text-gray-500 italic">
                     No preview available
                   </span>
                 )}
@@ -119,7 +119,7 @@ export default function ResponsesTab({
                     e.stopPropagation();
                     setSelectedResponseId(resp.id);
                   }}
-                  className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-800"
+                  className="rounded-lg p-1 text-gray-400 dark:text-gray-500 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-gray-200"
                   aria-label="View response details"
                 >
                   <svg

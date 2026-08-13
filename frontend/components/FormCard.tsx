@@ -44,12 +44,12 @@ export default function FormCard({
 
   return (
     <div
-      className="group relative flex flex-col rounded-xl border border-gray-100 bg-white p-6 transition-all hover:border-gray-200 hover:shadow-lg cursor-pointer"
+      className="group relative flex flex-col rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#181a1d] p-6 transition-all hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg dark:hover:shadow-black/40 cursor-pointer"
       onClick={() => router.push(`/forms/${form.id}/builder`)}
     >
       {/* Top row: title + menu */}
       <div className="mb-4 flex items-start justify-between gap-3">
-        <h3 className="text-[15px] font-semibold leading-snug text-gray-900 line-clamp-2">
+        <h3 className="text-[15px] font-semibold leading-snug text-gray-900 dark:text-gray-100 line-clamp-2">
           {form.title}
         </h3>
 
@@ -60,7 +60,7 @@ export default function FormCard({
               e.stopPropagation();
               setMenuOpen((prev) => !prev);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-all hover:bg-gray-50 hover:text-gray-600 group-hover:opacity-100 data-[open=true]:opacity-100"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 opacity-0 transition-all hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300 group-hover:opacity-100 data-[open=true]:opacity-100"
             data-open={menuOpen}
             aria-label="Form actions"
           >
@@ -73,7 +73,7 @@ export default function FormCard({
 
           {/* Dropdown menu */}
           {menuOpen && (
-            <div className="absolute right-0 top-9 z-20 w-44 rounded-xl border border-gray-100 bg-white py-1.5 shadow-xl animate-in fade-in slide-in-from-top-1">
+            <div className="absolute right-0 top-9 z-20 w-44 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1e2124] py-1.5 shadow-xl animate-in fade-in slide-in-from-top-1">
               <MenuItem
                 label="Edit"
                 onClick={() => {
@@ -102,7 +102,7 @@ export default function FormCard({
                   onTogglePublish(form.id, form.status);
                 }}
               />
-              <div className="my-1 border-t border-gray-100" />
+              <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
               <MenuItem
                 label="Delete"
                 danger
@@ -121,8 +121,8 @@ export default function FormCard({
         <span
           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
             isPublished
-              ? "bg-emerald-50 text-emerald-700"
-              : "bg-gray-100 text-gray-500"
+              ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400"
+              : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
           }`}
         >
           <span
@@ -135,7 +135,7 @@ export default function FormCard({
       </div>
 
       {/* Meta row */}
-      <div className="mt-auto flex items-center gap-4 text-xs text-gray-400">
+      <div className="mt-auto flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
         <span className="inline-flex items-center gap-1">
           <svg
             width="14"
@@ -181,7 +181,7 @@ function MenuItem({
   label: string;
   onClick: () => void;
   danger?: boolean;
-}) {
+  }) {
   return (
     <button
       onClick={(e) => {
@@ -190,8 +190,8 @@ function MenuItem({
       }}
       className={`flex w-full items-center px-4 py-2 text-[13px] transition-colors ${
         danger
-          ? "text-red-600 hover:bg-red-50"
-          : "text-gray-700 hover:bg-gray-50"
+          ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
+          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
       }`}
     >
       {label}

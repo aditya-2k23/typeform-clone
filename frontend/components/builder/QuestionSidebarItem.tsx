@@ -41,10 +41,10 @@ export default function QuestionSidebarItem({
       onClick={onClick}
       className={`group flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm transition-all cursor-pointer ${
         isDragging
-          ? "z-50 bg-white shadow-lg ring-1 ring-gray-200"
+          ? "z-50 bg-white dark:bg-[#1f2226] shadow-lg ring-1 ring-gray-200 dark:ring-gray-700"
           : isSelected
-            ? "bg-gray-900 text-white"
-            : "text-gray-600 hover:bg-gray-50"
+            ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+            : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/60"
       }`}
     >
       {/* Drag handle */}
@@ -53,8 +53,8 @@ export default function QuestionSidebarItem({
         {...listeners}
         className={`shrink-0 cursor-grab touch-none rounded p-0.5 transition-colors active:cursor-grabbing ${
           isSelected
-            ? "text-gray-400 hover:text-gray-300"
-            : "text-gray-300 hover:text-gray-500"
+            ? "text-gray-400 dark:text-gray-500 hover:text-gray-300 dark:hover:text-gray-700"
+            : "text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400"
         }`}
         aria-label="Drag to reorder"
         onClick={(e) => e.stopPropagation()}
@@ -72,7 +72,7 @@ export default function QuestionSidebarItem({
       {/* Question number */}
       <span
         className={`shrink-0 text-xs font-semibold tabular-nums ${
-          isSelected ? "text-gray-400" : "text-gray-400"
+          isSelected ? "text-gray-400 dark:text-gray-500" : "text-gray-400 dark:text-gray-500"
         }`}
       >
         {index + 1}
@@ -81,7 +81,7 @@ export default function QuestionSidebarItem({
       {/* Type icon */}
       <span
         className={`shrink-0 ${
-          isSelected ? "text-gray-300" : "text-gray-400"
+          isSelected ? "text-gray-300 dark:text-gray-600" : "text-gray-400 dark:text-gray-500"
         }`}
       >
         {typeConfig?.icon}

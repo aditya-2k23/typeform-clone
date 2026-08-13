@@ -38,8 +38,8 @@ export default function Toast({
 
   const bgColor =
     type === "success"
-      ? "bg-gray-900 text-white"
-      : "bg-red-600 text-white";
+      ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-xl"
+      : "bg-red-600 text-white dark:bg-red-500 dark:text-white shadow-xl";
 
   const icon =
     type === "success" ? (
