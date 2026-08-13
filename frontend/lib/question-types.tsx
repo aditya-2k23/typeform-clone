@@ -6,7 +6,7 @@ export interface QuestionTypeConfig {
   icon: ReactNode;
 }
 
-/* ── SVG icon helper (18×18, stroke-based) ───────────────────────────── */
+// SVG icon helper (18×18, stroke-based)
 
 function Icon({ children }: { children: ReactNode }) {
   return (
@@ -25,7 +25,7 @@ function Icon({ children }: { children: ReactNode }) {
   );
 }
 
-/* ── Question type definitions ───────────────────────────────────────── */
+// Question type definitions
 
 export const QUESTION_TYPES: QuestionTypeConfig[] = [
   {

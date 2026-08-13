@@ -24,7 +24,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // ── Fetch form by slug ──────────────────────────────────────────────────
+  // Fetch form by slug
   useEffect(() => {
     async function loadForm() {
       try {
@@ -39,7 +39,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
     loadForm();
   }, [slug]);
 
-  // ── Validation ──────────────────────────────────────────────────────────
+  // Validation
   const validateQuestion = useCallback(
     (questionId: string, value: string | undefined): string | null => {
       if (!form) return null;
@@ -65,7 +65,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
     [form]
   );
 
-  // ── Submit ──────────────────────────────────────────────────────────────
+  // Submit
   const handleSubmit = useCallback(async () => {
     if (!form || submitting) return;
 
@@ -106,7 +106,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
     }
   }, [form, submitting, answers, slug, validateQuestion]);
 
-  // ── Advance / Navigate ──────────────────────────────────────────────────
+  // Advance / Navigate
   const handleNext = useCallback(() => {
     if (!form || form.questions.length === 0) return;
 
@@ -143,7 +143,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
     []
   );
 
-  // ── Keyboard shortcuts for navigation & choices ─────────────────────────
+  // Keyboard shortcuts for navigation & choices
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (!form || submitted || loading) return;
@@ -214,7 +214,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [form, currentIndex, submitted, loading, handleAnswerChange, handleNext, handlePrev]);
 
-  // ── States ──────────────────────────────────────────────────────────────
+  // States
 
   if (loading) {
     return (

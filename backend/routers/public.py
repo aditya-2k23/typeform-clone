@@ -20,7 +20,7 @@ from schemas import (
 router = APIRouter(prefix="/public", tags=["Public"])
 
 
-# ── Endpoints ────────────────────────────────────────────────────────────
+# Endpoints
 
 @router.get("/forms/{slug}", response_model=PublicFormOut)
 def get_public_form(slug: str, db: Session = Depends(get_db)):

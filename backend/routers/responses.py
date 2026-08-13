@@ -32,7 +32,7 @@ from schemas import (
 router = APIRouter(tags=["Responses"])
 
 
-# ── Helpers ──────────────────────────────────────────────────────────────
+# Helpers
 
 def _get_form_or_404(form_id: str, db: Session) -> Form:
     form = db.get(Form, form_id)
@@ -41,7 +41,7 @@ def _get_form_or_404(form_id: str, db: Session) -> Form:
     return form
 
 
-# ── Endpoints ────────────────────────────────────────────────────────────
+# Endpoints
 
 @router.get("/forms/{form_id}/responses", response_model=list[ResponseListItem])
 def list_responses(form_id: str, db: Session = Depends(get_db)):

@@ -171,7 +171,7 @@ export default function FormCard({
   );
 }
 
-/* ── Small helper: dropdown menu item ─────────────────────────────────── */
+// Helper: dropdown menu item
 
 function MenuItem({
   label,

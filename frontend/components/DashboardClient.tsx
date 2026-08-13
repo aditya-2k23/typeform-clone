@@ -21,7 +21,7 @@ export default function DashboardClient() {
   const [toast, setToast] = useState<ToastData | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  // ── Fetch forms ───────────────────────────────────────────────────────
+  // Fetch forms
   const fetchForms = useCallback(async () => {
     try {
       const data = await apiFetch<FormListItem[]>("/forms");
@@ -37,12 +37,12 @@ export default function DashboardClient() {
     fetchForms();
   }, [fetchForms]);
 
-  // ── Helpers ───────────────────────────────────────────────────────────
+  // Helpers
   function showToast(message: string, type: "success" | "error" = "success") {
     setToast({ message, type });
   }
 
-  // ── Create ────────────────────────────────────────────────────────────
+  // Create
   async function handleCreate() {
     setCreating(true);
     try {
@@ -58,7 +58,7 @@ export default function DashboardClient() {
     }
   }
 
-  // ── Duplicate ─────────────────────────────────────────────────────────
+  // Duplicate
   async function handleDuplicate(id: string) {
     try {
       await apiFetch<FormDetail>(`/forms/${id}/duplicate`, { method: "POST" });
@@ -69,7 +69,7 @@ export default function DashboardClient() {
     }
   }
 
-  // ── Delete ────────────────────────────────────────────────────────────
+  // Delete
   async function handleDeleteConfirmed() {
     if (!confirmDelete) return;
     const id = confirmDelete;
@@ -83,7 +83,7 @@ export default function DashboardClient() {
     }
   }
 
-  // ── Publish / Unpublish ───────────────────────────────────────────────
+  // Publish / Unpublish
   async function handleTogglePublish(id: string, currentStatus: string) {
     const action = currentStatus === "published" ? "unpublish" : "publish";
     try {
@@ -95,7 +95,7 @@ export default function DashboardClient() {
     }
   }
 
-  // ── Render ────────────────────────────────────────────────────────────
+  // Render
   return (
     <>
       <Navbar />

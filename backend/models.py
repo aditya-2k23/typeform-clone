@@ -28,10 +28,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 def _generate_slug(length: int = 8) -> str:
     """Generate a short random alphanumeric slug for public share links."""
     alphabet = string.ascii_lowercase + string.digits
@@ -42,10 +38,7 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-# ---------------------------------------------------------------------------
 # Models
-# ---------------------------------------------------------------------------
-
 class Form(Base):
     """
     A form/survey that contains questions and collects responses.

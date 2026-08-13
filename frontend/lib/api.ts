@@ -3,8 +3,9 @@
  * All fetch calls to the backend should use this base URL.
  */
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+export const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+).replace(/\/+$/, "");
 
 /**
  * Typed fetch wrapper that prepends the API base URL
@@ -14,7 +15,8 @@ export async function apiFetch<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
-  const url = `${API_BASE_URL}${path}`;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const url = `${API_BASE_URL}${normalizedPath}`;
 
   const res = await fetch(url, {
     headers: {

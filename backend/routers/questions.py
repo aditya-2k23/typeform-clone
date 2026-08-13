@@ -18,7 +18,7 @@ from schemas import (
 router = APIRouter(tags=["Questions"])
 
 
-# ── Helpers ──────────────────────────────────────────────────────────────
+# Helpers
 
 def _get_question_or_404(question_id: str, db: Session) -> Question:
     question = db.get(Question, question_id)
@@ -43,7 +43,7 @@ def _sync_options(question: Question, options_in: list, db: Session) -> None:
         ))
 
 
-# ── Endpoints ────────────────────────────────────────────────────────────
+# Endpoints
 
 @router.post(
     "/forms/{form_id}/questions",

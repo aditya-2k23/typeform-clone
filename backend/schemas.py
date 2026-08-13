@@ -11,9 +11,7 @@ from typing import Any
 from pydantic import BaseModel, Field, field_validator
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # Shared / Reusable
-# ═══════════════════════════════════════════════════════════════════════════
 
 QUESTION_TYPES = {
     "short_text",
@@ -29,9 +27,7 @@ QUESTION_TYPES = {
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # QuestionOption
-# ═══════════════════════════════════════════════════════════════════════════
 
 class QuestionOptionOut(BaseModel):
     id: str
@@ -47,9 +43,7 @@ class QuestionOptionIn(BaseModel):
     order: int = Field(..., ge=0)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # Question
-# ═══════════════════════════════════════════════════════════════════════════
 
 class QuestionOut(BaseModel):
     id: str
@@ -101,9 +95,7 @@ class QuestionReorderRequest(BaseModel):
     items: list[QuestionReorderItem] = Field(..., min_length=1)
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # Form
-# ═══════════════════════════════════════════════════════════════════════════
 
 class FormListItem(BaseModel):
     id: str
@@ -151,9 +143,7 @@ class FormPublishOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # Public form (respondent-facing)
-# ═══════════════════════════════════════════════════════════════════════════
 
 class PublicFormOut(BaseModel):
     """Stripped-down form view for the public fill experience."""
@@ -166,9 +156,7 @@ class PublicFormOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # Response / Answer (submission)
-# ═══════════════════════════════════════════════════════════════════════════
 
 class AnswerIn(BaseModel):
     question_id: str
@@ -191,9 +179,7 @@ class SubmitResponseOut(BaseModel):
     response_id: str
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # Results — response listing & detail
-# ═══════════════════════════════════════════════════════════════════════════
 
 class AnswerPreview(BaseModel):
     question_title: str
@@ -224,9 +210,7 @@ class ResponseDetail(BaseModel):
     model_config = {"from_attributes": True}
 
 
-# ═══════════════════════════════════════════════════════════════════════════
 # Stats
-# ═══════════════════════════════════════════════════════════════════════════
 
 class OptionCount(BaseModel):
     label: str

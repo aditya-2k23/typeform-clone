@@ -45,7 +45,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
     fetchForm();
   }, [fetchForm]);
 
-  // ── Form Actions ────────────────────────────────────────────────────────
+  // Form Actions
   
   async function handleTitleChange(title: string) {
     if (!form) return;
@@ -88,7 +88,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
     }
   }
 
-  // ── Question Actions ────────────────────────────────────────────────────
+  // Question Actions
 
   async function handleAddQuestion(type: string) {
     if (!form) return;
@@ -183,7 +183,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
     }
   }
 
-  // ── Render ──────────────────────────────────────────────────────────────
+  // Render
 
   if (loading || !form) {
     return (

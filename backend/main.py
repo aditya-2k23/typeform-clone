@@ -6,6 +6,7 @@ On startup the application:
   2. Registers all feature routers.
 """
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -20,10 +21,7 @@ import models  # noqa: F401
 from routers import forms, questions, public, responses
 
 
-# ---------------------------------------------------------------------------
 # Lifespan — runs once on startup / shutdown
-# ---------------------------------------------------------------------------
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create tables on startup (no-op if they already exist)
@@ -32,10 +30,7 @@ async def lifespan(app: FastAPI):
     # Shutdown logic (if any) goes here
 
 
-# ---------------------------------------------------------------------------
 # App instance
-# ---------------------------------------------------------------------------
-
 app = FastAPI(
     title="Typeform Clone API",
     description="Backend API for the Typeform clone project.",
@@ -43,30 +38,27 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS — allow the Next.js dev server
+# CORS — configure allowed origins from environment variable
+raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+allowed_origins = [origin.strip().rstrip("/") for origin in raw_origins.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# ---------------------------------------------------------------------------
 # Routers
-# ---------------------------------------------------------------------------
-
 app.include_router(forms.router)
 app.include_router(questions.router)
 app.include_router(public.router)
 app.include_router(responses.router)
 
 
-# ---------------------------------------------------------------------------
 # Root routes
-# ---------------------------------------------------------------------------
-
 @app.get("/health")
 def health_check():
     """Simple liveness probe."""

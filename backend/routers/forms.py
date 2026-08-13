@@ -21,7 +21,7 @@ from schemas import (
 router = APIRouter(prefix="/forms", tags=["Forms"])
 
 
-# ── Helpers ──────────────────────────────────────────────────────────────
+# Helpers
 
 def _get_form_or_404(form_id: str, db: Session) -> Form:
     form = db.get(Form, form_id)
@@ -30,7 +30,7 @@ def _get_form_or_404(form_id: str, db: Session) -> Form:
     return form
 
 
-# ── Endpoints ────────────────────────────────────────────────────────────
+# Endpoints
 
 @router.get("", response_model=list[FormListItem])
 def list_forms(db: Session = Depends(get_db)):

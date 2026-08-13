@@ -26,9 +26,7 @@ def seed():
     db = SessionLocal()
 
     try:
-        # ==================================================================
         # FORM 1 — Customer Feedback Survey
-        # ==================================================================
         form1 = Form(
             title="Customer Feedback Survey",
             description=(
@@ -41,7 +39,7 @@ def seed():
         db.add(form1)
         db.flush()  # Populate form1.id
 
-        # --- Questions ---------------------------------------------------
+        # Questions
 
         q1_1 = Question(
             form_id=form1.id,
@@ -97,7 +95,7 @@ def seed():
         db.add_all(opts_q1_3)
         db.flush()
 
-        # --- Responses & Answers -----------------------------------------
+        # Responses & Answers
 
         r1_1 = Response(form_id=form1.id)
         db.add(r1_1)
@@ -143,9 +141,7 @@ def seed():
             Answer(response_id=r1_4.id, question_id=q1_5.id, value="Absolutely fantastic experience!"),
         ])
 
-        # ==================================================================
         # FORM 2 — Tech Conference Registration
-        # ==================================================================
         form2 = Form(
             title="Tech Conference 2024 Registration",
             description=(
@@ -158,7 +154,7 @@ def seed():
         db.add(form2)
         db.flush()
 
-        # --- Questions ---------------------------------------------------
+        # Questions
 
         q2_1 = Question(
             form_id=form2.id,
@@ -240,7 +236,7 @@ def seed():
         db.add_all(opts_q2_3 + opts_q2_4)
         db.flush()
 
-        # --- Responses & Answers -----------------------------------------
+        # Responses & Answers
 
         r2_1 = Response(form_id=form2.id)
         db.add(r2_1)
