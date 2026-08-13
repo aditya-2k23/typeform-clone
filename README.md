@@ -2,23 +2,18 @@
 
 A full-stack Typeform clone featuring a minimalist form builder, an interactive one-question-at-a-time respondent flow, a creator dashboard, and response analytics with CSV export.
 
----
-
 ## Tech Stack
 
 - **Frontend**: Next.js (App Router, React 19, TypeScript), Tailwind CSS v4, `@dnd-kit` (sortable drag-and-drop).
 - **Backend**: FastAPI (Python 3.11+), Uvicorn.
 - **Database**: SQLite with SQLAlchemy ORM (cascade deletions, eager-loaded queries).
 
----
-
 ## Setup Instructions
 
 ### Prerequisites
+
 - Node.js ≥ 18
 - Python ≥ 3.11
-
----
 
 ### Backend Setup
 
@@ -40,8 +35,6 @@ A full-stack Typeform clone featuring a minimalist form builder, an interactive 
    ```
    The backend API will run at **http://localhost:8000** (Interactive API docs at **http://localhost:8000/docs**).
 
----
-
 ### Frontend Setup
 
 1. Open a terminal in `/frontend`:
@@ -57,14 +50,12 @@ A full-stack Typeform clone featuring a minimalist form builder, an interactive 
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:8000
    ```
-   *Note: If omitted, `lib/api.ts` automatically defaults to `http://localhost:8000`.*
+   _Note: If omitted, `lib/api.ts` automatically defaults to `http://localhost:8000`._
 4. Start the Next.js development server:
    ```bash
    npm run dev
    ```
    The application will run at **http://localhost:3000**.
-
----
 
 ## Architecture Overview
 
@@ -76,8 +67,6 @@ The project uses a client-server architecture separating UI and API concerns:
   2. **Questions Router (`routers/questions.py`)**: Question creation, updates, deletions, and drag-and-drop reordering.
   3. **Public Router (`routers/public.py`)**: Respondent-facing endpoints for fetching published forms by slug and submitting responses.
   4. **Responses Router (`routers/responses.py`)**: Response listings, detailed single-submission views, per-question aggregate statistics, and CSV export streaming.
-
----
 
 ## Database Schema
 
@@ -144,40 +133,42 @@ erDiagram
 ## API Overview
 
 ### Forms Router (`/forms`)
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/forms` | List all forms with question & response counts |
-| `POST` | `/forms` | Create a new draft form |
-| `GET` | `/forms/{id}` | Get full form detail with questions and options |
-| `PUT` | `/forms/{id}` | Update form title or description |
-| `DELETE` | `/forms/{id}` | Delete a form (cascades to questions & responses) |
-| `POST` | `/forms/{id}/duplicate` | Deep-copy a form with all questions and reset to draft |
-| `POST` | `/forms/{id}/publish` | Publish form and generate public link |
-| `POST` | `/forms/{id}/unpublish` | Revert form back to draft status |
+
+| Method   | Path                    | Purpose                                                |
+| -------- | ----------------------- | ------------------------------------------------------ |
+| `GET`    | `/forms`                | List all forms with question & response counts         |
+| `POST`   | `/forms`                | Create a new draft form                                |
+| `GET`    | `/forms/{id}`           | Get full form detail with questions and options        |
+| `PUT`    | `/forms/{id}`           | Update form title or description                       |
+| `DELETE` | `/forms/{id}`           | Delete a form (cascades to questions & responses)      |
+| `POST`   | `/forms/{id}/duplicate` | Deep-copy a form with all questions and reset to draft |
+| `POST`   | `/forms/{id}/publish`   | Publish form and generate public link                  |
+| `POST`   | `/forms/{id}/unpublish` | Revert form back to draft status                       |
 
 ### Questions Router (`/forms/{id}/questions` & `/questions`)
-| Method | Path | Purpose |
-|---|---|---|
-| `POST` | `/forms/{id}/questions` | Add a new question to a form |
-| `PUT` | `/questions/{id}` | Update question title, required flag, settings, and options |
-| `DELETE` | `/questions/{id}` | Delete a question |
-| `PUT` | `/forms/{id}/questions/reorder` | Bulk reorder questions |
+
+| Method   | Path                            | Purpose                                                     |
+| -------- | ------------------------------- | ----------------------------------------------------------- |
+| `POST`   | `/forms/{id}/questions`         | Add a new question to a form                                |
+| `PUT`    | `/questions/{id}`               | Update question title, required flag, settings, and options |
+| `DELETE` | `/questions/{id}`               | Delete a question                                           |
+| `PUT`    | `/forms/{id}/questions/reorder` | Bulk reorder questions                                      |
 
 ### Public Router (`/public`)
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/public/forms/{slug}` | Fetch published form data by slug for respondents |
+
+| Method | Path                             | Purpose                                            |
+| ------ | -------------------------------- | -------------------------------------------------- |
+| `GET`  | `/public/forms/{slug}`           | Fetch published form data by slug for respondents  |
 | `POST` | `/public/forms/{slug}/responses` | Submit answers to a published form with validation |
 
 ### Responses Router (`/forms/{id}/responses` & `/forms/{id}/stats`)
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/forms/{id}/responses` | List all responses for a form with preview answers |
-| `GET` | `/forms/{id}/responses/{response_id}` | Get full question/answer details for one response |
-| `GET` | `/forms/{id}/responses/export` | Download all responses as a CSV file |
-| `GET` | `/forms/{id}/stats` | Get aggregate statistics and ratings distribution |
 
----
+| Method | Path                                  | Purpose                                            |
+| ------ | ------------------------------------- | -------------------------------------------------- |
+| `GET`  | `/forms/{id}/responses`               | List all responses for a form with preview answers |
+| `GET`  | `/forms/{id}/responses/{response_id}` | Get full question/answer details for one response  |
+| `GET`  | `/forms/{id}/responses/export`        | Download all responses as a CSV file               |
+| `GET`  | `/forms/{id}/stats`                   | Get aggregate statistics and ratings distribution  |
 
 ## Supported Question Types
 
@@ -190,9 +181,7 @@ Implemented in [`frontend/lib/question-types.tsx`](frontend/lib/question-types.t
 5. **Email (`email`)**: Validated email input.
 6. **Number (`number`)**: Numeric input.
 7. **Yes / No (`yes_no`)**: Binary choice buttons with `Y` / `N` keyboard shortcuts.
-8. **Rating (`rating`)**: Configurable scale (default 5) with custom icon shapes (*Star*, *Heart*, *Thumbs Up*, *Crown*, *Lightning*) and digit key shortcuts (`1`..`5`).
-
----
+8. **Rating (`rating`)**: Configurable scale (default 5) with custom icon shapes (_Star_, _Heart_, _Thumbs Up_, _Crown_, _Lightning_) and digit key shortcuts (`1`..`5`).
 
 ## Assumptions & Simplifications
 
@@ -200,8 +189,6 @@ Implemented in [`frontend/lib/question-types.tsx`](frontend/lib/question-types.t
 - **SQLite Database**: Used for zero-config local development with file persistence.
 - **Auto-Generated Slugs**: 8-character unique alphanumeric slugs generated for public form URLs.
 - **Text-Based Answer Storage**: All answer values are stored as strings in the `Answer.value` column, with type-specific validation enforced on the backend at submission time.
-
----
 
 ## Known Placeholders / Not Implemented
 
