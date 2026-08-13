@@ -12,7 +12,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from database import engine, Base
+from database import engine, Base, SessionLocal
 
 # Import models so Base.metadata knows about every table
 import models  # noqa: F401
@@ -26,6 +26,20 @@ from routers import forms, questions, public, responses
 async def lifespan(app: FastAPI):
     # Create tables on startup (no-op if they already exist)
     Base.metadata.create_all(bind=engine)
+
+    # Auto-seed initial sample data if the database is empty
+    try:
+        from seed import seed
+        db = SessionLocal()
+        try:
+            if db.query(models.Form).count() == 0:
+                print("⚡ Database is empty — running initial seed...")
+                seed()
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"Warning: Auto-seed skipped ({e})")
+
     yield
     # Shutdown logic (if any) goes here
 
@@ -68,7 +82,25 @@ app.include_router(responses.router)
 
 
 # Root routes
+@app.get("/")
+def root():
+    """Root info endpoint."""
+    return {
+        "message": "Typeform Clone API is running",
+        "docs": "/docs",
+        "health": "/health",
+    }
+
+
 @app.get("/health")
 def health_check():
     """Simple liveness probe."""
     return {"status": "ok"}
+
+
+@app.post("/seed")
+def trigger_seed():
+    """Manually trigger database seeding (idempotent: resets and seeds sample data)."""
+    from seed import seed
+    seed()
+    return {"status": "success", "message": "Database seeded with sample forms and responses!"}
