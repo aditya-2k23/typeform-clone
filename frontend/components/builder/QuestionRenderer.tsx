@@ -30,18 +30,53 @@ export default function QuestionRenderer({
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const selectRef = useRef<HTMLSelectElement | null>(null);
 
-  // Auto focus input when switching questions in interactive mode
+  // Auto focus input/select when switching questions in interactive mode
   useEffect(() => {
-    if (interactive && inputRef.current) {
+    if (!interactive) return;
+
+    if (question.type === "dropdown" && selectRef.current) {
+      selectRef.current.focus();
+    } else if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [question.id, interactive]);
+  }, [question.id, question.type, interactive]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    // For text inputs: Enter advances
+    // For textarea: Enter (without Shift) or Ctrl+Enter advances, Shift+Enter adds newline
+    if (question.type === "long_text") {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        onEnter?.();
+      } else if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        onEnter?.();
+      }
+    } else if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       onEnter?.();
+    }
+  };
+
+  const getHintText = () => {
+    if (submitting) return null;
+    if (isLast) return "press Enter ↵ to submit";
+
+    switch (question.type) {
+      case "multiple_choice":
+        return "press A, B, C... or Enter ↵";
+      case "yes_no":
+        return "press Y or N";
+      case "rating": {
+        const max = (question.settings?.max_rating as number) || 5;
+        return `press 1 to ${max} or Enter ↵`;
+      }
+      case "long_text":
+        return "press Shift ⇧ + Enter ↵ for newline, Enter ↵ to advance";
+      default:
+        return "press Enter ↵";
     }
   };
 
@@ -66,10 +101,11 @@ export default function QuestionRenderer({
               onKeyDown={handleKeyDown}
               placeholder="Type your answer here..."
               disabled={!interactive}
-              className={`w-full border-b-2 bg-transparent py-2.5 text-2xl text-gray-900 outline-none transition-colors placeholder:text-gray-300 ${
+              aria-label={question.title || "Your answer"}
+              className={`w-full border-b-2 bg-transparent py-2.5 text-2xl text-gray-900 dark:text-white outline-none transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600 ${
                 error
                   ? "border-red-400 focus:border-red-500"
-                  : "border-gray-200 focus:border-gray-900"
+                  : "border-gray-200 dark:border-gray-700 focus:border-gray-900 dark:focus:border-white"
               }`}
             />
           </div>
@@ -85,16 +121,17 @@ export default function QuestionRenderer({
               onKeyDown={handleKeyDown}
               placeholder="Type your answer here..."
               disabled={!interactive}
+              aria-label={question.title || "Your answer"}
               rows={3}
-              className={`w-full resize-none border-b-2 bg-transparent py-2.5 text-xl text-gray-900 outline-none transition-colors placeholder:text-gray-300 ${
+              className={`w-full resize-none border-b-2 bg-transparent py-2.5 text-xl text-gray-900 dark:text-white outline-none transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600 ${
                 error
                   ? "border-red-400 focus:border-red-500"
-                  : "border-gray-200 focus:border-gray-900"
+                  : "border-gray-200 dark:border-gray-700 focus:border-gray-900 dark:focus:border-white"
               }`}
             />
             {interactive && (
-              <p className="mt-1.5 text-xs text-gray-400">
-                Shift ⇧ + Enter ↵ for new line
+              <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
+                Shift ⇧ + Enter ↵ for new line • Enter ↵ to advance
               </p>
             )}
           </div>
@@ -102,38 +139,41 @@ export default function QuestionRenderer({
 
       case "multiple_choice":
         return (
-          <div className="flex flex-col gap-2.5 max-w-lg">
+          <div role="radiogroup" aria-label={question.title} className="flex flex-col gap-2.5 max-w-lg">
             {question.options?.map((opt, i) => {
               const isSelected = value === opt.label;
+              const letter = LETTERS[i] ?? i + 1;
               return (
                 <button
                   key={opt.id || i}
                   type="button"
+                  role="radio"
+                  aria-checked={isSelected}
                   disabled={!interactive}
                   onClick={() => {
                     onChange?.(opt.label);
                   }}
-                  className={`group flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${
+                  className={`group flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-all focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white focus-visible:outline-hidden ${
                     !interactive
-                      ? "cursor-not-allowed border-gray-200 bg-gray-50/50 opacity-60"
+                      ? "cursor-not-allowed border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 opacity-60"
                       : isSelected
-                        ? "border-gray-900 bg-gray-900/5 ring-1 ring-gray-900"
-                        : "border-gray-200 bg-white hover:border-gray-400 hover:bg-gray-50/80"
+                        ? "border-gray-900 dark:border-white bg-gray-900/5 dark:bg-white/10 ring-1 ring-gray-900 dark:ring-white"
+                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-[#181a1d] hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-50/80 dark:hover:bg-gray-800/80"
                   }`}
                 >
                   <div className="flex items-center gap-3.5">
                     <span
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded border text-xs font-semibold transition-colors ${
                         isSelected
-                          ? "border-gray-900 bg-gray-900 text-white"
-                          : "border-gray-300 bg-white text-gray-600 group-hover:border-gray-400"
+                          ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                          : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 group-hover:border-gray-400 dark:group-hover:border-gray-500"
                       }`}
                     >
-                      {LETTERS[i] ?? i + 1}
+                      {letter}
                     </span>
                     <span
                       className={`text-base font-medium transition-colors ${
-                        isSelected ? "text-gray-900" : "text-gray-700"
+                        isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"
                       }`}
                     >
                       {opt.label}
@@ -141,7 +181,7 @@ export default function QuestionRenderer({
                   </div>
                   {isSelected && (
                     <svg
-                      className="h-5 w-5 text-gray-900"
+                      className="h-5 w-5 text-gray-900 dark:text-white"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
@@ -156,7 +196,7 @@ export default function QuestionRenderer({
               );
             })}
             {(!question.options || question.options.length === 0) && (
-              <div className="text-sm text-gray-400 italic">No options added yet</div>
+              <div className="text-sm text-gray-400 dark:text-gray-500 italic">No options added yet</div>
             )}
           </div>
         );
@@ -165,13 +205,16 @@ export default function QuestionRenderer({
         return (
           <div className="max-w-md">
             <select
+              ref={selectRef}
               value={interactive ? value : ""}
               onChange={(e) => onChange?.(e.target.value)}
+              onKeyDown={handleKeyDown}
               disabled={!interactive}
-              className={`w-full rounded-xl border bg-white px-4 py-3 text-base text-gray-900 outline-none transition-colors ${
+              aria-label={question.title || "Select an option"}
+              className={`w-full rounded-xl border bg-white dark:bg-[#181a1d] px-4 py-3 text-base text-gray-900 dark:text-white outline-none transition-colors focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white focus-visible:outline-hidden ${
                 !interactive
-                  ? "cursor-not-allowed border-gray-200 bg-gray-50/50 opacity-60"
-                  : "border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+                  ? "cursor-not-allowed border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 opacity-60"
+                  : "border-gray-300 dark:border-gray-700 focus:border-gray-900 dark:focus:border-white focus:ring-1 focus:ring-gray-900 dark:focus:ring-white"
               }`}
             >
               <option value="" disabled>
@@ -188,7 +231,7 @@ export default function QuestionRenderer({
 
       case "yes_no":
         return (
-          <div className="flex gap-4 max-w-sm">
+          <div role="radiogroup" aria-label={question.title} className="flex gap-4 max-w-sm">
             {[
               { label: "Yes", key: "Y" },
               { label: "No", key: "N" },
@@ -198,19 +241,21 @@ export default function QuestionRenderer({
                 <button
                   key={opt.label}
                   type="button"
+                  role="radio"
+                  aria-checked={isSelected}
                   disabled={!interactive}
                   onClick={() => onChange?.(opt.label)}
-                  className={`group flex flex-1 items-center justify-between rounded-xl border px-5 py-4 text-left transition-all ${
+                  className={`group flex flex-1 items-center justify-between rounded-xl border px-5 py-4 text-left transition-all focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white focus-visible:outline-hidden ${
                     !interactive
-                      ? "cursor-not-allowed border-gray-200 bg-gray-50/50 opacity-60"
+                      ? "cursor-not-allowed border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 opacity-60"
                       : isSelected
-                        ? "border-gray-900 bg-gray-900/5 ring-1 ring-gray-900"
-                        : "border-gray-200 bg-white hover:border-gray-400 hover:bg-gray-50/80"
+                        ? "border-gray-900 dark:border-white bg-gray-900/5 dark:bg-white/10 ring-1 ring-gray-900 dark:ring-white"
+                        : "border-gray-200 dark:border-gray-800 bg-white dark:bg-[#181a1d] hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-50/80 dark:hover:bg-gray-800/80"
                   }`}
                 >
                   <span
                     className={`text-lg font-medium ${
-                      isSelected ? "text-gray-900" : "text-gray-700"
+                      isSelected ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"
                     }`}
                   >
                     {opt.label}
@@ -218,8 +263,8 @@ export default function QuestionRenderer({
                   <span
                     className={`flex h-6 w-6 items-center justify-center rounded border text-xs font-semibold ${
                       isSelected
-                        ? "border-gray-900 bg-gray-900 text-white"
-                        : "border-gray-300 bg-white text-gray-500 group-hover:border-gray-400"
+                        ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                        : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 group-hover:border-gray-400 dark:group-hover:border-gray-500"
                     }`}
                   >
                     {opt.key}
@@ -237,7 +282,7 @@ export default function QuestionRenderer({
         const selectedRating = parseInt(value, 10) || 0;
 
         return (
-          <div className="flex flex-col gap-2">
+          <div role="radiogroup" aria-label={question.title} className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-3">
               {Array.from({ length: max }).map((_, i) => {
                 const ratingNum = i + 1;
@@ -250,6 +295,9 @@ export default function QuestionRenderer({
                   <button
                     key={ratingNum}
                     type="button"
+                    role="radio"
+                    aria-checked={ratingNum === selectedRating}
+                    aria-label={`Rate ${ratingNum} of ${max}`}
                     disabled={!interactive}
                     onMouseEnter={() => interactive && setHoverRating(ratingNum)}
                     onMouseLeave={() => interactive && setHoverRating(null)}
@@ -258,7 +306,7 @@ export default function QuestionRenderer({
                         onChange?.(String(ratingNum));
                       }
                     }}
-                    className={`group flex flex-col items-center gap-1.5 p-1 transition-all ${
+                    className={`group flex flex-col items-center gap-1.5 p-1 transition-all rounded-lg focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden ${
                       !interactive
                         ? "cursor-not-allowed opacity-60"
                         : "cursor-pointer hover:scale-105"
@@ -268,7 +316,7 @@ export default function QuestionRenderer({
                       className={`transition-colors ${
                         isLit
                           ? "text-amber-500 fill-amber-500"
-                          : "text-gray-300 hover:text-gray-400"
+                          : "text-gray-300 dark:text-gray-700 hover:text-gray-400 dark:hover:text-gray-600"
                       }`}
                     >
                       {iconConfig.render({
@@ -277,7 +325,7 @@ export default function QuestionRenderer({
                     </div>
                     <span
                       className={`text-xs font-medium transition-colors ${
-                        isLit ? "text-gray-900 font-semibold" : "text-gray-400"
+                        isLit ? "text-gray-900 dark:text-white font-semibold" : "text-gray-400 dark:text-gray-500"
                       }`}
                     >
                       {ratingNum}
@@ -291,15 +339,17 @@ export default function QuestionRenderer({
       }
 
       default:
-        return <div className="text-gray-400">Unsupported question type</div>;
+        return <div className="text-gray-400 dark:text-gray-500">Unsupported question type</div>;
     }
   };
+
+  const hint = getHintText();
 
   return (
     <div className="flex min-h-[60vh] w-full flex-col justify-center px-6 sm:px-16 lg:px-28 animate-question-in">
       <div className="flex gap-4">
         {/* Number with arrow */}
-        <div className="flex items-start gap-1 pt-1.5 text-gray-900">
+        <div className="flex items-start gap-1 pt-1.5 text-gray-900 dark:text-white">
           <span className="text-xl font-bold">{questionNumber}</span>
           <svg
             className="mt-0.5"
@@ -318,16 +368,16 @@ export default function QuestionRenderer({
 
         <div className="flex-1 max-w-2xl">
           {/* Title */}
-          <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
+          <h1 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-3xl lg:text-4xl">
             {question.title || "Untitled"}
             {question.required && (
-              <span className="ml-1.5 text-red-500">*</span>
+              <span className="ml-1.5 text-red-500" aria-label="Required">*</span>
             )}
           </h1>
 
           {/* Description */}
           {question.description && (
-            <p className="mb-6 text-base text-gray-500 sm:text-lg">
+            <p className="mb-6 text-base text-gray-500 dark:text-gray-400 sm:text-lg">
               {question.description}
             </p>
           )}
@@ -339,7 +389,7 @@ export default function QuestionRenderer({
 
           {/* Inline Error */}
           {error && (
-            <div className="mt-3 flex items-center gap-2 text-sm font-medium text-red-600 animate-in">
+            <div role="alert" className="mt-3 flex items-center gap-2 text-sm font-medium text-red-600 dark:text-red-400 animate-in">
               <svg
                 width="16"
                 height="16"
@@ -362,15 +412,16 @@ export default function QuestionRenderer({
               type="button"
               disabled={!interactive || submitting}
               onClick={() => onEnter?.()}
-              className={`flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-2.5 text-base font-semibold text-white shadow-sm transition-all ${
+              aria-label={isLast ? "Submit form" : "Confirm and next question (Enter)"}
+              className={`flex items-center gap-2 rounded-lg bg-gray-900 dark:bg-white px-6 py-2.5 text-base font-semibold text-white dark:text-gray-900 shadow-xs transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white focus-visible:outline-hidden ${
                 !interactive || submitting
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-800 active:scale-[0.98] cursor-pointer"
+                  : "hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-[0.98] cursor-pointer"
               }`}
             >
               {submitting ? (
                 <>
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white dark:border-gray-900 border-t-transparent" />
                   Submitting…
                 </>
               ) : isLast ? (
@@ -408,9 +459,9 @@ export default function QuestionRenderer({
               )}
             </button>
 
-            {interactive && !submitting && (
-              <span className="text-xs text-gray-400">
-                press <span className="font-semibold text-gray-600">Enter ↵</span>
+            {interactive && hint && (
+              <span className="text-xs text-gray-400 dark:text-gray-500">
+                {hint}
               </span>
             )}
           </div>

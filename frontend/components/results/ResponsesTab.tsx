@@ -23,7 +23,7 @@ export default function ResponsesTab({
     return (
       <div className="space-y-3 animate-pulse">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-16 w-full rounded-xl bg-gray-100" />
+          <div key={i} className="h-16 w-full rounded-xl bg-gray-100 dark:bg-gray-800" />
         ))}
       </div>
     );

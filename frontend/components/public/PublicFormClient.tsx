@@ -154,39 +154,99 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
       const activeTag = document.activeElement?.tagName.toLowerCase();
       const isInputActive = activeTag === "input" || activeTag === "textarea" || activeTag === "select";
 
-      // Multiple choice keyboard selection (A, B, C...)
-      if (
-        !isInputActive &&
-        currentQ.type === "multiple_choice" &&
-        currentQ.options &&
-        e.key.length === 1 &&
-        /^[a-zA-Z]$/.test(e.key)
-      ) {
-        const index = e.key.toUpperCase().charCodeAt(0) - 65;
-        if (index >= 0 && index < currentQ.options.length) {
-          handleAnswerChange(currentQ.id, currentQ.options[index].label);
+      // Global navigation: PageUp / PageDown / Ctrl+Arrows
+      if (e.key === "PageUp" || ((e.ctrlKey || e.metaKey) && e.key === "ArrowUp")) {
+        e.preventDefault();
+        handlePrev();
+        return;
+      }
+      if (e.key === "PageDown" || ((e.ctrlKey || e.metaKey) && e.key === "ArrowDown")) {
+        e.preventDefault();
+        handleNext();
+        return;
+      }
+
+      // Multiple choice keyboard selection (A, B, C... or 1, 2, 3...)
+      if (!isInputActive && currentQ.type === "multiple_choice" && currentQ.options && currentQ.options.length > 0) {
+        // Letter selection (A=0, B=1...)
+        if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
+          const index = e.key.toUpperCase().charCodeAt(0) - 65;
+          if (index >= 0 && index < currentQ.options.length) {
+            handleAnswerChange(currentQ.id, currentQ.options[index].label);
+            return;
+          }
+        }
+        // Number selection (1=0, 2=1...)
+        if (e.key.length === 1 && /^[1-9]$/.test(e.key)) {
+          const index = parseInt(e.key, 10) - 1;
+          if (index >= 0 && index < currentQ.options.length) {
+            handleAnswerChange(currentQ.id, currentQ.options[index].label);
+            return;
+          }
+        }
+        // Arrow navigation between options
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+          e.preventDefault();
+          const currentVal = answers[currentQ.id];
+          const currIdx = currentQ.options.findIndex((o) => o.label === currentVal);
+          if (currIdx === -1) {
+            handleAnswerChange(currentQ.id, currentQ.options[0].label);
+          } else {
+            const nextIdx =
+              e.key === "ArrowDown"
+                ? Math.min(currentQ.options.length - 1, currIdx + 1)
+                : Math.max(0, currIdx - 1);
+            handleAnswerChange(currentQ.id, currentQ.options[nextIdx].label);
+          }
           return;
         }
       }
 
-      // Rating number selection (1, 2, 3...)
+      // Rating keyboard selection (1..9, 0 for 10, arrow keys)
       if (!isInputActive && currentQ.type === "rating") {
-        const digit = parseInt(e.key, 10);
         const max = (currentQ.settings?.max_rating as number) || 5;
+        const currentVal = parseInt(answers[currentQ.id] || "0", 10);
+
+        if (e.key === "0" && max >= 10) {
+          handleAnswerChange(currentQ.id, "10");
+          return;
+        }
+
+        const digit = parseInt(e.key, 10);
         if (!isNaN(digit) && digit >= 1 && digit <= max) {
           handleAnswerChange(currentQ.id, String(digit));
           return;
         }
+
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+          e.preventDefault();
+          const newVal = Math.max(1, (currentVal || 1) - 1);
+          handleAnswerChange(currentQ.id, String(newVal));
+          return;
+        }
+
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+          e.preventDefault();
+          const newVal = Math.min(max, (currentVal || 0) + 1);
+          handleAnswerChange(currentQ.id, String(newVal));
+          return;
+        }
       }
 
-      // Yes / No keyboard selection (Y, N)
+      // Yes / No keyboard selection (Y, N, 1, 2, arrow keys)
       if (!isInputActive && currentQ.type === "yes_no") {
-        if (e.key.toLowerCase() === "y") {
+        if (e.key.toLowerCase() === "y" || e.key === "1") {
           handleAnswerChange(currentQ.id, "Yes");
           return;
         }
-        if (e.key.toLowerCase() === "n") {
+        if (e.key.toLowerCase() === "n" || e.key === "2") {
           handleAnswerChange(currentQ.id, "No");
+          return;
+        }
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
+          e.preventDefault();
+          const currentVal = answers[currentQ.id];
+          handleAnswerChange(currentQ.id, currentVal === "Yes" ? "No" : "Yes");
           return;
         }
       }
@@ -198,8 +258,8 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
         return;
       }
 
-      // Arrow keys navigation
-      if (!isInputActive) {
+      // Arrow keys navigation when on other types
+      if (!isInputActive && currentQ.type !== "multiple_choice" && currentQ.type !== "rating" && currentQ.type !== "yes_no") {
         if (e.key === "ArrowUp") {
           e.preventDefault();
           handlePrev();
@@ -212,22 +272,22 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [form, currentIndex, submitted, loading, handleAnswerChange, handleNext, handlePrev]);
+  }, [form, currentIndex, submitted, loading, answers, handleAnswerChange, handleNext, handlePrev]);
 
   // States
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white text-gray-900">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-[#111315] text-gray-900 dark:text-white">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-900 dark:border-white border-t-transparent" />
       </div>
     );
   }
 
   if (notFound || !form) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-white text-gray-900 px-6 text-center">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-400">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-[#111315] text-gray-900 dark:text-white px-6 text-center">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500">
           <svg
             width="28"
             height="28"
@@ -241,15 +301,15 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
             <path d="M12 8v4M12 16h.01" />
           </svg>
         </div>
-        <h1 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+        <h1 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           This form isn&apos;t available
         </h1>
-        <p className="mb-6 max-w-sm text-sm text-gray-500">
+        <p className="mb-6 max-w-sm text-sm text-gray-500 dark:text-gray-400">
           The link may be broken or the form might have been unpublished by its owner.
         </p>
         <Link
           href="/"
-          className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+          className="rounded-full bg-gray-900 dark:bg-white px-5 py-2 text-sm font-medium text-white dark:text-gray-900 transition-colors hover:bg-gray-800 dark:hover:bg-gray-100"
         >
           Go to Home
         </Link>
@@ -263,11 +323,11 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
 
   if (form.questions.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-white text-gray-900 px-6 text-center">
-        <h1 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-[#111315] text-gray-900 dark:text-white px-6 text-center">
+        <h1 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           {form.title}
         </h1>
-        <p className="text-sm text-gray-500">This form does not have any questions yet.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">This form does not have any questions yet.</p>
       </div>
     );
   }
@@ -276,7 +336,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
   const isLast = currentIndex === form.questions.length - 1;
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-gray-900">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-[#111315] text-gray-900 dark:text-white">
       {/* Fixed top progress bar */}
       <ProgressBar current={currentIndex + 1} total={form.questions.length} />
 
@@ -297,9 +357,9 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
       </main>
 
       {/* Fixed bottom controls */}
-      <footer className="sticky bottom-0 z-40 flex items-center justify-between border-t border-gray-100 bg-white/80 px-6 py-3 backdrop-blur-sm sm:px-12">
-        <div className="text-xs text-gray-400">
-          <span className="font-medium text-gray-600">
+      <footer className="sticky bottom-0 z-40 flex items-center justify-between border-t border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-[#111315]/80 px-6 py-3 backdrop-blur-sm sm:px-12">
+        <div className="text-xs text-gray-400 dark:text-gray-500">
+          <span className="font-medium text-gray-600 dark:text-gray-300">
             {currentIndex + 1}
           </span>{" "}
           of {form.questions.length}
@@ -312,7 +372,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
             onClick={handlePrev}
             disabled={currentIndex === 0}
             aria-label="Previous question"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 shadow-xs transition-colors hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-white"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#181a1d] text-gray-700 dark:text-gray-200 shadow-xs transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#181a1d]"
           >
             <svg
               width="16"
@@ -332,7 +392,7 @@ export default function PublicFormClient({ slug }: PublicFormClientProps) {
             onClick={handleNext}
             disabled={submitting}
             aria-label="Next question"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 shadow-xs transition-colors hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-white"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#181a1d] text-gray-700 dark:text-gray-200 shadow-xs transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#181a1d]"
           >
             <svg
               width="16"

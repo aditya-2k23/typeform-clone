@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef, useEffect } from "react";
+
 interface OptionEditorProps {
   options: { label: string; order: number }[];
   onChange: (options: { label: string; order: number }[]) => void;
@@ -7,6 +9,15 @@ interface OptionEditorProps {
 
 export default function OptionEditor({ options, onChange }: OptionEditorProps) {
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+  const focusIndexRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (focusIndexRef.current !== null && inputsRef.current[focusIndexRef.current]) {
+      inputsRef.current[focusIndexRef.current]?.focus();
+      focusIndexRef.current = null;
+    }
+  }, [options.length]);
 
   function updateLabel(index: number, label: string) {
     const updated = [...options];
@@ -15,24 +26,49 @@ export default function OptionEditor({ options, onChange }: OptionEditorProps) {
   }
 
   function removeOption(index: number) {
+    if (options.length <= 1) return; // Keep at least one option
     const updated = options
       .filter((_, i) => i !== index)
       .map((opt, i) => ({ ...opt, order: i }));
+    focusIndexRef.current = Math.max(0, index - 1);
     onChange(updated);
   }
 
-  function addOption() {
-    onChange([
-      ...options,
-      { label: "", order: options.length },
-    ]);
+  function addOption(afterIndex?: number) {
+    const insertIdx = afterIndex !== undefined ? afterIndex + 1 : options.length;
+    const newOptions = [...options];
+    newOptions.splice(insertIdx, 0, { label: "", order: insertIdx });
+    const reindexed = newOptions.map((opt, i) => ({ ...opt, order: i }));
+    focusIndexRef.current = insertIdx;
+    onChange(reindexed);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>, index: number) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addOption(index);
+    } else if (e.key === "Backspace" && options[index]?.label === "" && options.length > 1) {
+      e.preventDefault();
+      removeOption(index);
+    } else if (e.key === "ArrowDown" && index < options.length - 1) {
+      e.preventDefault();
+      inputsRef.current[index + 1]?.focus();
+    } else if (e.key === "ArrowUp" && index > 0) {
+      e.preventDefault();
+      inputsRef.current[index - 1]?.focus();
+    }
   }
 
   return (
     <div className="space-y-2">
-      <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-        Options
-      </label>
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          Options
+        </label>
+        <span className="text-[11px] text-gray-400 dark:text-gray-500">
+          Press <kbd className="font-mono font-semibold">Enter ↵</kbd> to add option
+        </span>
+      </div>
 
       <div className="space-y-1.5">
         {options.map((opt, i) => (
@@ -44,18 +80,24 @@ export default function OptionEditor({ options, onChange }: OptionEditorProps) {
 
             {/* Option text input */}
             <input
+              ref={(el) => {
+                inputsRef.current[i] = el;
+              }}
               type="text"
               value={opt.label}
               onChange={(e) => updateLabel(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, i)}
               placeholder={`Option ${i + 1}`}
-              className="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#181a1d] px-3 py-1.5 text-sm text-gray-900 dark:text-white outline-none transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400"
+              aria-label={`Option ${i + 1}`}
+              className="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#181a1d] px-3 py-1.5 text-sm text-gray-900 dark:text-white outline-none transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:border-gray-400 dark:focus:border-gray-500 focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500 focus-visible:outline-hidden"
             />
 
             {/* Delete button */}
             <button
               type="button"
               onClick={() => removeOption(i)}
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-300 dark:text-gray-600 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-500 dark:hover:text-red-400"
+              disabled={options.length <= 1}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-300 dark:text-gray-600 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-500 dark:hover:text-red-400 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-300 focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-hidden"
               aria-label={`Remove option ${i + 1}`}
             >
               <svg
@@ -77,8 +119,8 @@ export default function OptionEditor({ options, onChange }: OptionEditorProps) {
       {/* Add option */}
       <button
         type="button"
-        onClick={addOption}
-        className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200"
+        onClick={() => addOption()}
+        className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white focus-visible:outline-hidden"
       >
         <svg
           width="14"

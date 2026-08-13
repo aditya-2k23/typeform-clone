@@ -19,6 +19,17 @@ export default function ResponseDetailModal({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Close on Escape key
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   useEffect(() => {
     async function loadDetail() {
       try {
@@ -36,7 +47,12 @@ export default function ResponseDetailModal({
   }, [formId, responseId]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="response-detail-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/30 backdrop-blur-sm"
@@ -48,7 +64,7 @@ export default function ResponseDetailModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 px-6 py-4">
           <div>
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+            <h3 id="response-detail-title" className="text-base font-semibold text-gray-900 dark:text-white">
               Response Details
             </h3>
             {detail && (
@@ -65,7 +81,8 @@ export default function ResponseDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300"
+            aria-label="Close response details (Escape)"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:text-gray-300 focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white focus-visible:outline-hidden"
           >
             <svg
               width="16"
@@ -125,7 +142,7 @@ export default function ResponseDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-gray-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-gray-900 transition-colors hover:bg-gray-800 dark:hover:bg-gray-100"
+            className="rounded-lg bg-gray-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-gray-900 transition-colors hover:bg-gray-800 dark:hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white focus-visible:outline-hidden"
           >
             Done
           </button>

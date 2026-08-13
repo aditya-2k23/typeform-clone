@@ -6,8 +6,8 @@ interface ThankYouScreenProps {
 
 export default function ThankYouScreen({ formTitle }: ThankYouScreenProps) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white text-gray-900 px-6 text-center animate-in">
-      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-900 text-white shadow-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-[#111315] text-gray-900 dark:text-white px-6 text-center animate-in">
+      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md">
         <svg
           width="32"
           height="32"
@@ -22,14 +22,14 @@ export default function ThankYouScreen({ formTitle }: ThankYouScreenProps) {
         </svg>
       </div>
 
-      <h1 className="mb-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+      <h1 className="mb-3 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
         Thank you!
       </h1>
 
-      <p className="max-w-md text-base text-gray-500 sm:text-lg">
+      <p className="max-w-md text-base text-gray-500 dark:text-gray-400 sm:text-lg">
         {formTitle ? (
           <>
-            Your response for <span className="font-semibold text-gray-700">{formTitle}</span> has been successfully recorded.
+            Your response for <span className="font-semibold text-gray-700 dark:text-gray-200">{formTitle}</span> has been successfully recorded.
           </>
         ) : (
           "Your response has been successfully recorded."
