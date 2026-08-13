@@ -49,3 +49,25 @@ export interface FormPublishOut {
   slug: string;
   public_url: string;
 }
+
+export interface PublicFormOut {
+  id: string;
+  title: string;
+  description: string | null;
+  slug: string;
+  questions: QuestionOut[];
+}
+
+export interface AnswerIn {
+  question_id: string;
+  value: string;
+}
+
+export interface SubmitResponseRequest {
+  answers: AnswerIn[];
+}
+
+export interface SubmitResponseOut {
+  response_id: string;
+}
+

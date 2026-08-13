@@ -262,15 +262,91 @@ export default function BuilderClient({ formId }: { formId: string }) {
         />
       )}
 
-      {/* Published Success Modal / Toast */}
+      {/* Published Success Modal */}
       {publishedUrl && (
-        <ConfirmDialog
-          title="Form Published!"
-          message={`Your form is now live at:\n${window.location.origin}${publishedUrl}`}
-          confirmLabel="Close"
-          onConfirm={() => setPublishedUrl(null)}
-          onCancel={() => setPublishedUrl(null)}
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            onClick={() => setPublishedUrl(null)}
+          />
+          <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl animate-in">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h2 className="mb-1.5 text-lg font-semibold text-gray-900">
+              Your typeform is live!
+            </h2>
+            <p className="mb-5 text-sm text-gray-500">
+              Anyone with this link can now view and submit responses.
+            </p>
+
+            <div className="mb-6 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-2 text-sm">
+              <input
+                type="text"
+                readOnly
+                value={
+                  typeof window !== "undefined"
+                    ? `${window.location.origin}${publishedUrl}`
+                    : publishedUrl
+                }
+                className="flex-1 bg-transparent px-2 text-xs font-mono text-gray-700 outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}${publishedUrl}`
+                  );
+                  setToast({ message: "Link copied to clipboard", type: "success" });
+                }}
+                className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-800 shadow-xs border border-gray-200 transition-colors hover:bg-gray-100"
+              >
+                Copy
+              </button>
+            </div>
+
+            <div className="flex justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setPublishedUrl(null)}
+                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+              >
+                Done
+              </button>
+              <a
+                href={publishedUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+              >
+                Open form
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 3h7v7M13 3L6 10" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
