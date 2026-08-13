@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import type { QuestionOut } from "@/lib/types";
 import { QUESTION_TYPE_MAP } from "@/lib/question-types";
+import { RATING_ICONS } from "@/lib/rating-icons";
 import { useDebouncedCallback } from "@/lib/hooks/useDebounce";
 import OptionEditor from "./OptionEditor";
 
@@ -105,26 +106,45 @@ export default function QuestionEditor({
         {hasOptions && (
           <OptionEditor
             options={question.options || []}
-            onChange={(opts) => onChange({ options: opts })}
+            onChange={(opts) => onChange({ options: opts as any })}
           />
         )}
 
         {question.type === "rating" && (
-          <div className="flex items-center gap-4">
-            <label className="text-sm font-medium text-gray-700">
-              Max Rating
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={10}
-              value={(question.settings?.max_rating as number) || 5}
-              onChange={(e) => {
-                const val = parseInt(e.target.value, 10);
-                if (!isNaN(val)) handleSettingsChange({ max_rating: val });
-              }}
-              className="w-20 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-            />
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700">
+                Max Rating
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={10}
+                value={(question.settings?.max_rating as number) || 5}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  if (!isNaN(val)) handleSettingsChange({ max_rating: val });
+                }}
+                className="w-20 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+              />
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700">
+                Shape
+              </label>
+              <select
+                value={(question.settings?.icon as string) || "star"}
+                onChange={(e) => handleSettingsChange({ icon: e.target.value })}
+                className="w-32 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+              >
+                {RATING_ICONS.map((icon) => (
+                  <option key={icon.id} value={icon.id}>
+                    {icon.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         )}
       </div>

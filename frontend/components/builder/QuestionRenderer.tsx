@@ -1,6 +1,7 @@
 "use client";
 
 import type { QuestionOut } from "@/lib/types";
+import { RATING_ICON_MAP } from "@/lib/rating-icons";
 
 interface QuestionRendererProps {
   question: QuestionOut;
@@ -76,20 +77,24 @@ export default function QuestionRenderer({
           </div>
         );
 
-      case "rating":
+      case "rating": {
         const max = (question.settings?.max_rating as number) || 5;
+        const iconId = (question.settings?.icon as string) || "star";
+        const iconConfig = RATING_ICON_MAP[iconId] || RATING_ICON_MAP["star"];
+
         return (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {Array.from({ length: max }).map((_, i) => (
               <div
                 key={i}
-                className="flex h-14 w-14 cursor-not-allowed items-center justify-center rounded-lg border border-gray-200 bg-gray-50/50 text-xl font-bold text-gray-400 opacity-60"
+                className="flex cursor-not-allowed items-center justify-center text-gray-300 opacity-60 transition-colors"
               >
-                {i + 1}
+                {iconConfig.render({ className: "w-12 h-12" })}
               </div>
             ))}
           </div>
         );
+      }
 
       default:
         return <div className="text-gray-400">Unsupported question type</div>;

@@ -98,7 +98,7 @@ export default function BuilderClient({ formId }: { formId: string }) {
         method: "POST",
         body: JSON.stringify({
           type,
-          title: "",
+          title: "New Question",
         }),
       });
       setQuestions((prev) => [...prev, newQ]);
