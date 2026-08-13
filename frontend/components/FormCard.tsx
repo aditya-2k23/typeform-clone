@@ -82,6 +82,13 @@ export default function FormCard({
                 }}
               />
               <MenuItem
+                label="Results"
+                onClick={() => {
+                  setMenuOpen(false);
+                  router.push(`/forms/${form.id}/results`);
+                }}
+              />
+              <MenuItem
                 label="Duplicate"
                 onClick={() => {
                   setMenuOpen(false);
